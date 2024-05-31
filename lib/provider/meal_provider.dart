@@ -3,7 +3,7 @@ import 'package:mobile_project/model/meal_model.dart';
 
 import '../core/services/api_service.dart';
 
-
+/// This provider use for Category operations
 class MealProvider with ChangeNotifier {
   List<MealModel> _meals = [];
   bool _isLoading = false;
@@ -11,6 +11,7 @@ class MealProvider with ChangeNotifier {
   List<MealModel> get meals => _meals;
   bool get isLoading => _isLoading;
 
+  /// Get all the categories from the service
   Future<void> fetchMeals(String category) async {
     _isLoading = true;
     notifyListeners();
