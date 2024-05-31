@@ -72,3 +72,72 @@ class CategoryProvider with ChangeNotifier {
 
 
 ```
+
+******************\_******************EN******************\_\_******************
+
+## Mobile Meal Application
+
+- Our project is a small handbook for people who are wondering what to cook today. It first shows categories and then displays meals belonging to the selected category.
+
+# Service Usage
+
+- The REST API and http Flutter package are used for service usage. You can find an example usage below.
+
+```dart
+final class ApiService {
+  Future<List<dynamic>> fetchMeals(String category) async {
+    final response = await http.get(Uri.parse('$baseUrl/filter.php?c=$category'));
+    if (response.statusCode == 200) {
+      return json.decode(response.body)['meals'];
+    } else {
+      throw Exception('Failed to load meals');
+    }
+  }
+}
+```
+
+# Model Usage
+
+- A model was needed to use the data from the service on the UI side. An example of model usage in the project is as follows.
+
+```dart
+class MealModel {
+  final String id;
+  final String name;
+  final String thumbnail;
+
+  MealModel({required this.id, required this.name, required this.thumbnail});
+
+  factory MealModel.fromJson(Map<String, dynamic> json) {
+    return MealModel(
+      id: json['idMeal'],
+      name: json['strMeal'],
+      thumbnail: json['strMealThumb'],
+    );
+  }
+}
+```
+
+# State Management Usage
+
+- Provider was chosen for state management. The reason is that there are no very detailed operations in the project, so it was used for ease of use. An example usage is as follows.
+
+```dart
+class CategoryProvider with ChangeNotifier {
+  List<CategoryModel> _categories = [];
+  bool _isLoading = false;
+
+  List<CategoryModel> get categories => _categories;
+  bool get isLoading => _isLoading;
+
+/// Get all the categories from the service
+  Future<void> fetchCategories() async {
+    _isLoading = true;
+    notifyListeners();
+    _categories = await ApiService().fetchCategories().then((data) =>
+        data.map((item) => CategoryModel.fromJson(item)).toList());
+    _isLoading = false;
+    notifyListeners();
+  }
+}
+```
